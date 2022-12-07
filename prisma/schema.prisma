@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  fullname          String?   @default("")
+  avatar            String?   @default("")
+  dateOfBirth       String?   @default("")
+  phone             String?   @default("")
+  address           String?   @default("")
+  type              Int
+  status            Int
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+  senderMessages    Message[] @relation("sender")
+  recipientMessages Message[] @relation("recipient")
+  Item              Item[]
+  buyerCart         Cart[]    @relation("buyer")
+  sellerCart        Cart[]    @relation("seller")
+}
+
+model Message {
+  id              Int      @id @default(autoincrement())
+  senderUserId    Int?
+  senderUser      User?    @relation(name: "sender", fields: [senderUserId], references: [id])
+  recipientUserId Int?
+  recipientUser   User?    @relation(name: "recipient", fields: [recipientUserId], references: [id])
+  content         String
+  isRead          Boolean  @default(false)
+  type            Int
+  status          Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+}
+
+model Category {
+  id           Int            @id @default(autoincrement())
+  name         String         @default("")
+  description  String         @default("")
+  type         Int
+  status       Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now()) @updatedAt
+  ItemCategory ItemCategory[]
+}
+
+model Item {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String         @default("")
+  price        Float          @default(0)
+  userId       Int
+  user         User           @relation(fields: [userId], references: [id])
+  quantity     Int
+  type         Int
+  status       Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now()) @updatedAt
+  ItemImage    ItemImage[]
+  ItemCategory ItemCategory[]
+  CartItem     CartItem[]
+}
+
+model ItemCategory {
+  id         Int      @id @default(autoincrement())
+  itemId     Int
+  item       Item     @relation(fields: [itemId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  type       Int
+  status     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model ItemImage {
+  id        Int      @id @default(autoincrement())
+  itemId    Int
+  item      Item     @relation(fields: [itemId], references: [id])
+  url       String
+  type      Int
+  status    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Cart {
+  id           Int        @id @default(autoincrement())
+  amount       Float      @default(0)
+  buyerUserId  Int
+  buyerUser    User       @relation(name: "buyer", fields: [buyerUserId], references: [id])
+  sellerUserId Int
+  sellerUser   User       @relation(name: "seller", fields: [sellerUserId], references: [id])
+  type         Int
+  status       Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
+  CartItem     CartItem[]
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  itemId    Int
+  item      Item     @relation(fields: [itemId], references: [id])
+  cartId    Int
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  quantity  Int
+  type      Int
+  status    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
