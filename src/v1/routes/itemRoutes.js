@@ -345,6 +345,10 @@ router.get("/get-owned-items", itemController.getOwnItem);
  *                              type: integer
  *                          status:
  *                              type: integer
+ *                          categoryIds:
+ *                              type: array
+ *                              items:
+ *                                  type: integer
  *                          images:
  *                              type: array
  *                              items:
