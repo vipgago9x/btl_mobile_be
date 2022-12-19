@@ -61,7 +61,7 @@ const register = async (req, res) => {
         } else {
             let passHashed = await argonHelper.hash(fields.password);
             const result = await userDatabase.register(fields.email, passHashed,
-                fields.fullname, `${config.be_url}/v1/file/${newFilename}.jpg`, fields.dateOfBirth,
+                fields.fullname, ``, fields.dateOfBirth,
                 fields.phone, fields.address, fields.type, fields.status);
             if (result.ok) {
                 res.status(200).send({
