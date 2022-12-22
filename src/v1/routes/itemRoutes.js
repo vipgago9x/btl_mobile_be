@@ -111,6 +111,14 @@ router.get("/get-item-detail", itemController.getItemDetail);
  *     summary: Tìm kiếm items và sắp xếp theo trường price hoặc quantity (Có thể dùng ở màn xem tất cả sản phẩm phía người mua)
  *     parameters:
  *        - in: path
+ *          name: searchText
+ *          schema:
+ *              type: string
+ *        - in: path
+ *          name: categoryId
+ *          schema:
+ *              type: integer
+ *        - in: path
  *          name: pageSize
  *          schema:
  *              type: integer
@@ -166,21 +174,8 @@ router.get("/get-item-detail", itemController.getItemDetail);
  *                                          type: integer
  *                                      updatedAt:
  *                                          type: integer
- *                                      images:
- *                                          type: array
- *                                          items:
- *                                              type: object
- *                                              properties:
- *                                                  id:
- *                                                      type: integer
- *                                                  itemId:
- *                                                      type: integer
- *                                                  url:
- *                                                      type: string
- *                                                  type:
- *                                                      type: integer
- *                                                  status:
- *                                                      type: integer
+ *                                      imageURL:
+ *                                          type: string
  *                                      categories:
  *                                          type: array
  *                                          items:

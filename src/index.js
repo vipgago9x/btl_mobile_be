@@ -85,7 +85,6 @@ app.use("/v1/cart", v1CardRouter);
 let socketList = [];
 
 setInterval(() => {
-  console.log(socketList);
   for (let i = 0; i < socketList.length; i++) {
     for (let j = 0; j < socketList[i].socketIds.length; j++) {
       if (

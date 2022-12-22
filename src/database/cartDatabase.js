@@ -11,10 +11,11 @@ const getSellCart = async (userId, pageSize, pageNumber) => {
         const total = await prisma.cart.count({
             where: {
                 sellerUserId: userId,
+                status: { not: 0 }
             }
         });
         let carts = await prisma.cart.findMany({
-            where: { sellerUserId: userId },
+            where: { sellerUserId: userId, status: { not: 0 } },
             skip: (pageNumber - 1) * pageSize,
             take: pageSize,
             select: {
@@ -72,6 +73,7 @@ const getSellCart = async (userId, pageSize, pageNumber) => {
                 element2.item.categories = element2.item.ItemCategory.map(element3 => element3.category);
                 delete element2.item["ItemCategory"];
                 element2.item.imageUrl = element2.item.ItemImage.length > 0 ? element2.item.ItemImage[0].url : "";
+                element2.item.quantity = element2.quantity
                 delete element2.item["ItemImage"];
                 return element2.item;
             });
@@ -100,10 +102,11 @@ const getBuyCart = async (userId, pageSize, pageNumber) => {
         const total = await prisma.cart.count({
             where: {
                 buyerUserId: userId,
+                status: { not: 0 }
             }
         });
         let carts = await prisma.cart.findMany({
-            where: { buyerUserId: userId },
+            where: { buyerUserId: userId, status: { not: 0 } },
             skip: (pageNumber - 1) * pageSize,
             take: pageSize,
             select: {
@@ -161,6 +164,7 @@ const getBuyCart = async (userId, pageSize, pageNumber) => {
                 element2.item.categories = element2.item.ItemCategory.map(element3 => element3.category);
                 delete element2.item["ItemCategory"];
                 element2.item.imageUrl = element2.item.ItemImage.length > 0 ? element2.item.ItemImage[0].url : "";
+                element2.item.quantity = element2.quantity
                 delete element2.item["ItemImage"];
                 return element2.item;
             });

@@ -54,75 +54,68 @@ const getItemDetail = async (id) => {
     }
 }
 
-const searchItems = async (searchText, sortField, sortType, pageSize, pageNumber) => {
+const searchItems = async (searchText, categoryId, sortField, sortType, pageSize, pageNumber) => {
     try {
         pageNumber = parseInt(pageNumber);
         pageSize = parseInt(pageSize);
+        categoryId = parseInt(categoryId);
         let orderBy = {};
         if (sortField === 'price' || sortField === "quantity") {
             orderBy[sortField] = sortType;
         }
-        let whereClause = {
-            OR: [
-                {
-                    name: {
-                        contains: searchText
-                    }
-                },
-                {
-                    description: {
-                        contains: searchText
-                    }
-                }
-            ],
-            status: { not: 0 }
+        let whereClause = `("Item"."name" like '${'%' + searchText + '%'}' or "Item"."description" like '${'%' + searchText + '%'}') `;
+        if (categoryId && categoryId > 0) {
+            whereClause += ` AND EXISTS(select * From "ItemCategory" where "ItemCategory"."categoryId" = ${categoryId} and "ItemCategory"."itemId" = "Item"."id") `;
         }
-        const total = await prisma.item.count({
-            where: whereClause,
-        });
-        const item = await prisma.item.findMany({
-            where: whereClause,
-            orderBy: orderBy,
-            select: {
-                id: true,
-                name: true,
-                description: true,
-                status: true,
-                type: true,
-                price: true,
-                quantity: true,
-                createdAt: true,
-                updatedAt: true,
-                ItemImage: {
-                    where: {
-                        status: {
-                            not: 0
+
+        let countQuery = `
+        select count(*)
+        from "Item" where ${whereClause} 
+    `
+        const total = await prisma.$queryRawUnsafe(countQuery);
+        let item;
+        let query = `select "id",
+        "name",
+        "description",
+        "status",
+        "type",
+        "price",
+        "quantity",
+        "createdAt",
+        "updatedAt",
+        (select "url" from "ItemImage" where "ItemImage"."itemId" = "Item"."id" and "ItemImage"."status" <> 0 limit 1) as "imageURL"
+        from "Item" `
+            +
+            `where ${whereClause} `
+            +
+            `offset ${(pageNumber - 1) * pageSize} limit ${pageSize}`;
+        item = await prisma.$queryRawUnsafe(query);
+        for (let i = 0; i < item.length; i++) {
+            item[i].categories = await prisma.itemCategory.findMany({
+                where: {
+                    itemId: item[i].id
+                },
+                select: {
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            description: true,
+                            status: true,
+                            type: true
                         }
                     }
-                },
-                ItemCategory: {
-                    select: {
-                        category: true
-                    }
                 }
-            },
-            skip: (pageNumber - 1) * pageSize,
-            take: pageSize
-        }).then(items => {
-            return items.map(item => {
-                item.categories = item.ItemCategory.map(element => {
-                    return element.category;
-                });
-                delete item["ItemCategory"];
-                item.images = item.ItemImage;
-                delete item["ItemImage"];
-                return item;
-            });
-        })
+            }).then(categories => {
+                return categories.map(element => {
+                    return element.category
+                })
+            })
+        }
         return {
             ok: true,
             item: item,
-            total: total
+            total: parseInt(total[0].count)
         }
     } catch (error) {
         return {

@@ -22,7 +22,7 @@ const getItemDetail = async (req, res) => {
     }
 }
 const searchItem = async (req, res) => {
-    const result = await itemDatabase.searchItems(req.query.searchText, req.query.sortField, req.query.sortType, req.query.pageSize, req.query.pageNumber);
+    const result = await itemDatabase.searchItems(req.query.searchText, req.query.categoryId, req.query.sortField, req.query.sortType, req.query.pageSize, req.query.pageNumber);
     if (result.ok) {
         return res.status(200).send({
             ok: true,

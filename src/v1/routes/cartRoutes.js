@@ -77,6 +77,8 @@ const router = express.Router();
  *                                                              type: integer
  *                                                          price:
  *                                                              type: float
+ *                                                          quantity:
+ *                                                              type: integer
  *                                                          categories:
  *                                                              type: array
  *                                                              items:
@@ -175,6 +177,8 @@ router.get("/get-sell-cart", cartController.getSellCart);
  *                                                          type:
  *                                                              type: integer
  *                                                          status:
+ *                                                              type: integer
+ *                                                          quantity:
  *                                                              type: integer
  *                                                          price:
  *                                                              type: float
