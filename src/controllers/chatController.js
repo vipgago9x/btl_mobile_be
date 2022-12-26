@@ -35,8 +35,8 @@ const readUserMessage = async (req, res) => {
 
 const getUserMessages = async (req, res) => {
   const data = await chatService.getUserMessages(
-    req.query.id1,
-    req.query.id2,
+    req.body.currentUserId,
+    req.query.id,
     req.query.pageSize,
     req.query.pageNumber
   );
