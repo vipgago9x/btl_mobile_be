@@ -9,7 +9,10 @@ const getChatList = async (id) => {
     (select "isRead" from "Message" where ("Message"."recipientUserId" = ${id} and "Message"."senderUserId" = "User"."id") 
       or ("Message"."senderUserId" = ${id} and "Message"."recipientUserId" = "User"."id") 
     order by "Message"."id" limit 1) as "isRead"
-      from "User" where "User".status != 0 order by 
+      from "User" where "User".status != 0 and 
+      (EXISTS(select "id" from "Message" where ("Message"."recipientUserId" = ${id} and "Message"."senderUserId" = "User"."id")
+      or ("Message"."senderUserId" = ${id} and "Message"."recipientUserId" = "User"."id")) 
+      order by 
       (select "id" from "Message" where ("Message"."recipientUserId" = ${id} and "Message"."senderUserId" = "User"."id") 
       or ("Message"."senderUserId" = ${id} and "Message"."recipientUserId" = "User"."id") 
     order by "Message"."id" limit 1)
