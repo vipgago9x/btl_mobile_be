@@ -104,25 +104,30 @@ const chatDatabase = require("./database/chatDatabase");
 socketio.on("connection", (socket) => {
   let isExisted = false;
   let payload;
-  try {
-    payload = jwt.verify(
-      socket.handshake.headers.authorization.split(" ")[1],
-      config.jwt_secret_key
-    );
-  } catch (e) {
-    socket.disconnect();
-  }
-  for (let i = 0; i < socketList.length; i++) {
-    if (socketList[i].userId === payload.id) {
-      socketList[i].socketIds.push(socket.id);
-      isExisted = true;
-      break;
+  if (!socket.handshake.headers.authorization || socket.handshake.headers.authorization == "" || socket.handshake.headers.authorization.split(" ").length < 2) {
+
+  } else {
+
+    try {
+      payload = jwt.verify(
+        socket.handshake.headers.authorization.split(" ")[1],
+        config.jwt_secret_key
+      );
+    } catch (e) {
+      socket.disconnect();
     }
+    for (let i = 0; i < socketList.length; i++) {
+      if (socketList[i].userId === payload.id) {
+        socketList[i].socketIds.push(socket.id);
+        isExisted = true;
+        break;
+      }
+    }
+    if (!isExisted) {
+      socketList.push({ userId: payload.id, socketIds: [socket.id] });
+    }
+    console.log(socketList);
   }
-  if (!isExisted) {
-    socketList.push({ userId: payload.id, socketIds: [socket.id] });
-  }
-  console.log(socketList);
 
   socket.on("sendUserMessage", async (data) => {
     const res = await chatDatabase.saveUserMessage(
