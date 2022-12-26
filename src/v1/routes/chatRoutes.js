@@ -30,27 +30,16 @@ const router = express.Router();
  *                                  properties:
  *                                      id:
  *                                          type: integer
- *                                      employeeCode:
+ *                                      fullname:
  *                                          type: string
  *                                      email:
  *                                          type: string
  *                                      fullname:
  *                                          type: string
- *                                      authorityId:
- *                                          type: integer
- *                                      status:
- *                                          type: integer
- *                                      createdAt:
+ *                                      avatar:
  *                                          type: string
- *                                      updatedAt:
- *                                          type: string
- *                                      authority:
- *                                          type: object
- *                                          properties:
- *                                              id:
- *                                                  type: integer
- *                                              name:
- *                                                  type: string
+ *                                      isRead:
+ *                                          type: bool
  *
  *          500:
  *              description:

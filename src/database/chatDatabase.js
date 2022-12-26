@@ -16,23 +16,9 @@ const getChatList = async (id) => {
     limit 50
     `;
     const users = await prisma.$queryRawUnsafe(queryUser);
-    const queryGroup = `
-      select id, name, description,
-      (select "isRead" from "GroupMessage" where "GroupMessage"."groupId" = "Group"."id"
-      order by "GroupMessage"."id" limit 1) as "isRead"
-      from "Group" 
-      where (select id from "GroupUser" 
-      where "GroupUser"."groupId" = "Group"."id" and "GroupUser"."userId" = ${id} and status != 0 limit 1) is not null 
-      and "Group"."status" != 0
-      order by
-      (select "id" from "GroupMessage" where "GroupMessage"."groupId" = "Group"."id"
-      order by "GroupMessage"."id" limit 1)
-    `;
-    const groups = await prisma.$queryRawUnsafe(queryGroup);
     return {
       ok: true,
       users: users,
-      groups: groups,
     };
   } catch (e) {
     return {
