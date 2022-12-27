@@ -63,7 +63,7 @@ const searchItems = async (searchText, categoryId, sortField, sortType, pageSize
         if (sortField === 'price' || sortField === "quantity") {
             orderBy[sortField] = sortType;
         }
-        let whereClause = `("Item"."name" like '${'%' + searchText + '%'}' or "Item"."description" like '${'%' + searchText + '%'}') `;
+        let whereClause = `("Item"."name" ILIKE '${'%' + searchText + '%'}' or "Item"."description" ILIKE '${'%' + searchText + '%'}') `;
         if (categoryId && categoryId > 0) {
             whereClause += ` AND EXISTS(select * From "ItemCategory" where "ItemCategory"."categoryId" = ${categoryId} and "ItemCategory"."itemId" = "Item"."id") `;
         }
